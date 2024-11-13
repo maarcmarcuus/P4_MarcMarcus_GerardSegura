@@ -1,3 +1,5 @@
+package src;
+
 public class Assignatura {
 
     private final boolean mHonor;
@@ -23,7 +25,7 @@ public class Assignatura {
         this.mHonor = false;
     }
 
-    public void setNota(double nota) throws {
+    public void setNota(double nota) throws IllegalArgumentException{
         if (nota < 0 || nota > 10) {
             throw new IllegalArgumentException("Nota no vàlida");
         }
@@ -58,5 +60,9 @@ public class Assignatura {
 
     public boolean equals (Assignatura assig2){
         return assig2.nom == this.nom;
+    }
+
+    public String getNom() {
+        return this.nom;
     }
 }
