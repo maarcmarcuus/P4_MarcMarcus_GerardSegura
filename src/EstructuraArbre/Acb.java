@@ -1,7 +1,6 @@
 package EstructuraArbre;
 
 
-
 public interface Acb<E extends Comparable<E>> {
 
 
@@ -24,7 +23,7 @@ public interface Acb<E extends Comparable<E>> {
     // contrari llança una excepció ArbreException
 
 
-    Acb<E> fillEsquerre()throws CloneNotSupportedException;
+    Acb<E> fillEsquerre() throws CloneNotSupportedException;
     // retorna una còpia del subarbre esquerre.
     // en cas que l’arbre estigui buit o si no té fill
     // esquerre retorna un arbre buit.
@@ -42,6 +41,4 @@ public interface Acb<E extends Comparable<E>> {
 
     void buidar();
     // Neteja l’arbre deixant-lo buit.
-
-
 }

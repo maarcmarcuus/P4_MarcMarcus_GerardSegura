@@ -1,15 +1,21 @@
-package src;
+import Alumnes.Alumnes_SEC;
+import Alumnes.Assignatura;
+import EstructuraArbre.AcbEnll;
+import EstructuraArbre.ArbreException;
 
-public class Beca{
+import java.util.LinkedList;
+import java.util.Queue;
+import java.util.Scanner;
 
-    private AcbEnll<Alumnes_SEC> arbreACB;
+public class Beca {
+
+    private static final Scanner scanner = new Scanner(System.in);
+    private final AcbEnll<Alumnes_SEC> arbreACB;
     private Queue<Alumnes_SEC> llistaDescendent;
-    private final Scanner scanner;
 
-    public Beca(){ //TODO: check if correct
+    public Beca() {
         this.arbreACB = new AcbEnll<>();
 
-        // Insert example students
         try {
             arbreACB.inserir(exempleRosa());
             arbreACB.inserir(exempleEnric());
@@ -17,17 +23,14 @@ public class Beca{
             arbreACB.inserir(exempleRandom("Random2"));
             arbreACB.inserir(exempleRandom("Random3"));
         } catch (ArbreException e) {
-            e.printStackTrace();
+            System.err.println("Error: " + e.getMessage());
         }
 
-        //Inicialitza la llista descendent
         this.llistaDescendent = arbreACB.getDescendentList();
     }
 
-    public static void main (String[] args){
-
+    public static void main(String[] args) {
         Beca beca = new Beca();
-        Scanner scanner = new Scanner(System.in);
         int option;
 
         do {
@@ -51,11 +54,11 @@ public class Beca{
                     try {
                         beca.esborrarAlumne(nom);
                     } catch (ArbreException e) {
-                        e.printStackTrace();
+                        System.err.println("Error: " + e.getMessage());
                     }
                     break;
                 case 3:
-                    System.out.println(beca.toString());
+                    System.out.println(beca);
                     break;
                 case 4:
                     beca.esborrarAlumnesSenseMatricula();
@@ -67,39 +70,59 @@ public class Beca{
                     System.out.println("Opció no vàlida. Si us plau, seleccioneu una opció vàlida.");
             }
         } while (option != 5);
-
-        scanner.close();
-
     }
 
-    private Alumnes_SEC exempleRosa(){
+    private Alumnes_SEC exempleRosa() {
         Alumnes_SEC rosa = new Alumnes_SEC("Rosa");
         rosa.addAssignatura(new Assignatura("Fonaments", 6, 7.0, false));
         rosa.addAssignatura(new Assignatura("POO", 6, 5.0, false));
         rosa.addAssignatura(new Assignatura("EDA", 4, 9.0, false));
-        rosa.addAssignatura(new Assignatura("Avanzada", 4, 5.0, false));
+        rosa.addAssignatura(new Assignatura("Avançada", 4, 5.0, false));
         return rosa;
     }
 
-    private Alumnes_SEC exempleEnric(){
+    private Alumnes_SEC exempleEnric() {
         Alumnes_SEC enric = new Alumnes_SEC("Enric");
         enric.addAssignatura(new Assignatura("Fonaments", 6, 8.0, false));
         enric.addAssignatura(new Assignatura("POO", 6, 6.0, false));
         enric.addAssignatura(new Assignatura("EDA", 4, 9.0, true));
-        enric.addAssignatura(new Assignatura("Avansada", 4, 3.0, false));
+        enric.addAssignatura(new Assignatura("Avançada", 4, 3.0, false));
         return enric;
     }
 
-    private Alumnes_SEC exempleRandom(String nom){
+    private Alumnes_SEC exempleRandom(String nom) {
         Alumnes_SEC random = new Alumnes_SEC(nom);
         random.addAssignatura(new Assignatura("Fonaments", 6, Math.random() * 10, false));
         random.addAssignatura(new Assignatura("POO", 6, Math.random() * 10, false));
         random.addAssignatura(new Assignatura("EDA", 4, Math.random() * 10, false));
-        random.addAssignatura(new Assignatura("Avanzada", 4, Math.random() * 10, false));
+        random.addAssignatura(new Assignatura("Avançada", 4, Math.random() * 10, false));
         return random;
     }
 
-    public void esborrarAlumnesSenseMatricula(){
+    private boolean finalRecorregut() {
+        return llistaDescendent.isEmpty();
+    }
+
+    private Alumnes_SEC segRecorregut() {
+        if (llistaDescendent.isEmpty()) {
+            return null;
+        }
+        return llistaDescendent.poll();
+    }
+
+    @Override
+    public String toString() {
+        StringBuilder sb = new StringBuilder();
+        while (!finalRecorregut()) {
+            Alumnes_SEC alumne = segRecorregut();
+            if (alumne != null) {
+                sb.append(alumne).append("\n");
+            }
+        }
+        return sb.toString();
+    }
+
+    public void esborrarAlumnesSenseMatricula() {
         Queue<Alumnes_SEC> tempQueue = new LinkedList<>();
 
         while (!finalRecorregut()) {
@@ -116,7 +139,7 @@ public class Beca{
                     try {
                         arbreACB.esborrar(alumne);
                     } catch (ArbreException e) {
-                        e.printStackTrace();
+                        System.err.println("Error: " + e.getMessage());
                     }
                 } else {
                     tempQueue.add(alumne);
@@ -127,27 +150,27 @@ public class Beca{
         llistaDescendent = tempQueue;
     }
 
-    public void afegirAlumne(){
-        System.out.print("Enter the name of the student: ");
+    public void afegirAlumne() {
+        System.out.print("Introdueix el nom de l'alumne: ");
         String nom = scanner.nextLine();
         Alumnes_SEC newAlumne = new Alumnes_SEC(nom);
 
         while (true) {
-            System.out.print("Enter the name of the subject (or 'done' to finish): ");
+            System.out.print("Introdueix el nom de l'assignatura (done per acabar): ");
             String subjectName = scanner.nextLine();
             if (subjectName.equalsIgnoreCase("done")) {
                 break;
             }
 
-            System.out.print("Enter the number of credits: ");
+            System.out.print("Introdueix el nombre de crèdits: ");
             int credits = scanner.nextInt();
 
-            System.out.print("Enter the grade: ");
+            System.out.print("Introdueix la nota: ");
             double grade = scanner.nextDouble();
 
-            System.out.print("Is it an honor subject? (true/false): ");
+            System.out.print("Es tracta d'una matrícula d'honor? (true/false): ");
             boolean isHonor = scanner.nextBoolean();
-            scanner.nextLine(); // Consume the newline character
+            scanner.nextLine();
 
             Assignatura assignatura = new Assignatura(subjectName, credits, grade, isHonor);
             newAlumne.addAssignatura(assignatura);
@@ -157,31 +180,28 @@ public class Beca{
             arbreACB.inserir(newAlumne);
             llistaDescendent = arbreACB.getDescendentList(); // Update the descending list
         } catch (ArbreException e) {
-            e.printStackTrace();
+            System.err.println("Error: " + e.getMessage());
         }
     }
 
-    private boolean finalRecorregut(){
-        return llistaDescendent.isEmpty();
-    }
+    public void esborrarAlumne(String nom) throws ArbreException {
+        Queue<Alumnes_SEC> tempQueue = new LinkedList<>();
+        boolean found = false;
 
-    private Alumnes_SEC segRecorregut() {
-        if (llistaDescendent.isEmpty()) {
-            return null;
-        }
-        return llistaDescendent.poll();
-    }
-
-    public String toString(){
-        StringBuilder sb = new StringBuilder();
         while (!finalRecorregut()) {
             Alumnes_SEC alumne = segRecorregut();
-            if (alumne != null) {
-                sb.append(alumne.toString()).append("\n");
+            if (alumne != null && alumne.getNom().equals(nom)) {
+                arbreACB.esborrar(alumne);
+                found = true;
+            } else {
+                tempQueue.add(alumne);
             }
         }
-        return sb.toString();
+
+        if (!found) {
+            throw new ArbreException("Alumne no trobat");
+        }
+
+        llistaDescendent = tempQueue;
     }
-
-
 }

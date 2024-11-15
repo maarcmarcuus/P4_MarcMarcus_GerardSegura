@@ -1,8 +1,8 @@
-package src;
+package Alumnes;
 
 public class Alumnes_SEC implements Comparable<Alumnes_SEC> {
 
-    private Node cap;
+    private final Node cap;
 
     public Alumnes_SEC(String nom) {
         this.cap = new Node(nom);
@@ -13,10 +13,9 @@ public class Alumnes_SEC implements Comparable<Alumnes_SEC> {
         Node previous = null;
         boolean found = false;
 
-        // Traverse the linked list to find if the assignment already exists
         while (current != null) {
             if (current.info.equals(nova)) {
-                current.info = nova; // Overwrite with new information
+                current.info = nova;
                 found = true;
                 break;
             }
@@ -24,7 +23,6 @@ public class Alumnes_SEC implements Comparable<Alumnes_SEC> {
             current = current.next;
         }
 
-        // If the assignment does not exist, add it to the end of the list
         if (!found) {
             if (previous == null) {
                 cap.next = new Node(nova);
@@ -33,27 +31,26 @@ public class Alumnes_SEC implements Comparable<Alumnes_SEC> {
             }
         }
 
-        // Recalculate the average grade
         recalculateAverage();
     }
 
     private void recalculateAverage() {
-        Node current = cap;
-        double totalPoints = 0;
+        Node current = cap.next;
         int totalCredits = 0;
+        double divisor = 0;
 
         while (current != null) {
-            totalPoints += current.info.getPunts();
+            divisor += (double) current.info.getCredits() * current.info.getPunts();
             totalCredits += current.info.getCredits();
             current = current.next;
         }
 
-        double average = totalPoints / totalCredits;
+        double average = totalCredits == 0 ? 0 : divisor / totalCredits;
         cap.info.setNota(average);
     }
 
     public boolean hiHa(int punts) {
-        Node current = cap;
+        Node current = cap.next;
         while (current != null) {
             if (current.info.getPunts() == punts) {
                 return true;
@@ -63,39 +60,48 @@ public class Alumnes_SEC implements Comparable<Alumnes_SEC> {
         return false;
     }
 
+    @Override
     public int compareTo(Alumnes_SEC other) {
         double thisAverage = this.cap.info.getNota();
         double otherAverage = other.cap.info.getNota();
 
-        if (thisAverage < otherAverage) {
-            return -1;
-        } else if (thisAverage > otherAverage) {
-            return 1;
-        } else {
-            return 0;
-        }
+        return Double.compare(thisAverage, otherAverage);
     }
 
-
-
-    //TODO: Check if this is the correct implementation of the toString method
+    @Override
     public String toString() {
         return "Alumne: " + cap.info.getNom() + " - Nota mitjana: " + cap.info.getNota();
     }
 
-    private class Node {
+    public Assignatura[] getAssignatures() {
+        Node current = cap.next;
+        Assignatura[] assignatures = new Assignatura[100];
+        int i = 0;
+
+        while (current != null) {
+            assignatures[i++] = current.info;
+            current = current.next;
+        }
+
+        return assignatures;
+    }
+
+    public Object getNom() {
+        return cap.info.getNom();
+    }
+
+    private static class Node {
         Node next;
         Assignatura info;
 
-        public Node(String nom){
-            this.info = new Assignatura (nom);
-            next = null;
+        public Node(String nom) {
+            this.info = new Assignatura(nom);
+            this.next = null;
         }
 
         public Node(Assignatura info) {
             this.info = info;
-            next = null;
+            this.next = null;
         }
-
     }
 }
