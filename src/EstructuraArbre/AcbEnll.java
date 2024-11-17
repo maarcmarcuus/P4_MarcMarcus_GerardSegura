@@ -92,7 +92,7 @@ public class AcbEnll<E extends Comparable<E>> implements Acb<E> {
         if (arrel == null) {
             throw new ArbreException("Tree is empty");
         }
-        return arrel.element;
+        return (E)arrel.element;
     }
 
     @Override
